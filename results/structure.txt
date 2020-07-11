@@ -1,0 +1,21 @@
+EXAMPLE
+Code = 4707
+
+Original files:::::::::::::::
+System Transcript -- ./results/msoft/system-output/sw04707-mono.txt
+Original Gold A -- ./results/original-golds/sw4707A-ms98-a-word.text
+Original Gold B -- ./results/original-golds/sw4707B-ms98-a-word.text
+
+Mid Files::::::::::::::::::::
+System Trans Text -- ./results/msoft/system-trans-text/msoft-sw04707-mono-msoft-trans.txt
+Universal CSV -- ./results/msoft/universal/msoft-sw04707-mono-msoft.csv
+Joined Gold -- ./results/gold-trans-text/4707-full-joined-transcript.txt
+Gold Timings -- ./results/gold-timings/4707-full-transcript.json
+Gold A Clean -- ./results/original-split/4707-A-joined-transcript.txt
+Gold B Clean -- ./results/original-split/4707-B-joined-transcript.txt
+
+Output files:::::::::::::::::
+Stability -- ./results/msoft/stability/sw04707-mono.json
+Full WER -- ./results/msoft/full-wer/sw04707-mono.txt
+fo Lats -- ./results/msoft/latency/fo/sw04707-mono.json
+fd Lats -- ./results/msoft/latency/fd/sw04707-mono.json
