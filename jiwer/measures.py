@@ -38,7 +38,7 @@ from typing import List, Mapping, Tuple, Union
 
 import jiwer.transforms as tr
 
-__all__ = ["wer", "mer", "wil", "wip", "compute_measures"]
+__all__ = ["wer", "mer", "wil", "wip", "compute_measures", "ops"]
 
 ################################################################################
 # Implementation of the WER method, exposed publicly
@@ -61,6 +61,21 @@ _standardize_transform = tr.Compose(
     ]
 )
 
+
+def ops(
+    truth: Union[str, List[str]],
+    hypothesis: Union[str, List[str]],
+    truth_transform: Union[tr.Compose, tr.AbstractTransform] = _default_transform,
+    hypothesis_transform: Union[tr.Compose, tr.AbstractTransform] = _default_transform,
+    **kwargs
+):
+    """
+    return edit ops
+    """
+    all_ops = get_operations(
+        truth, hypothesis, truth_transform, hypothesis_transform, **kwargs
+    )
+    return all_ops
 
 def wer(
     truth: Union[str, List[str]],
@@ -183,7 +198,7 @@ def compute_measures(
         truth = t(truth)
         hypothesis = t(hypothesis)
 
-    # Preprocess truth and hypothesis
+    # Preprocess truth and hypothesisi
     truth, hypothesis = _preprocess(
         truth, hypothesis, truth_transform, hypothesis_transform
     )
@@ -209,6 +224,36 @@ def compute_measures(
         "wil": wil,
         "wip": wip,
     }
+
+def get_operations(
+    truth: Union[str, List[str]],
+    hypothesis: Union[str, List[str]],
+    truth_transform: Union[tr.Compose, tr.AbstractTransform] = _default_transform,
+    hypothesis_transform: Union[tr.Compose, tr.AbstractTransform] = _default_transform,
+    **kwargs
+):
+    """
+    blah
+    """
+
+    # deal with old API
+    if "standardize" in kwargs:
+        truth = _standardize_transform(truth)
+        hypothesis = _standardize_transform(hypothesis)
+    if "words_to_filter" in kwargs:
+        t = tr.RemoveSpecificWords(kwargs["words_to_filter"])
+        truth = t(truth)
+        hypothesis = t(hypothesis)
+
+    # Preprocess truth and hypothesisi
+    truth, hypothesis = _preprocess(
+        truth, hypothesis, truth_transform, hypothesis_transform
+    )
+
+    # Get the operation counts (#hits, #substitutions, #deletions, #insertions)
+    operations = _get_editops(truth, hypothesis)
+
+    return operations
 
 
 ################################################################################
@@ -274,3 +319,18 @@ def _get_operation_counts(
     hits = len(source_string) - (substitutions + deletions)
 
     return hits, substitutions, deletions, insertions
+
+
+def _get_editops(
+    source_string: str, destination_string: str
+):
+    
+    editops = Levenshtein.editops(source_string, destination_string)
+    # type(editops)
+
+    # substitutions = sum(1 if op[0] == "replace" else 0 for op in editops)
+    # deletions = sum(1 if op[0] == "delete" else 0 for op in editops)
+    # insertions = sum(1 if op[0] == "insert" else 0 for op in editops)
+    # hits = len(source_string) - (substitutions + deletions)
+
+    return editops
